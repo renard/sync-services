@@ -2,7 +2,7 @@
 
 # sync-services --- Sync services between several hosts.
 # Copyright © 2010 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-# Last changed: 2010-09-13 17:37:55
+# Last changed: 2010-09-13 17:51:01
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,10 +21,13 @@ VERSION="1.0"
 
 config_dir=./.sync-services
 config=config
+
+ips=
 pre_update_hook=pre-update
 post_update_hook=post-update
 pre_update_remote_hook=pre-update-remote
 post_update_remote_hook=post-update-remote
+
 dry_run=
 verbose=
 run_parts=$(which run-parts)
@@ -129,7 +132,7 @@ local_ip_re=$(ip -4 a l scope global | \
 run_hook pre_update_hook
 
 # loop al IPs
-for ip in $( echo ${IPS} | tr ' ' '\n' | grep -vE "${local_ip_re}"); do
+for ip in $( echo ${ips} | tr ' ' '\n' | grep -vE "${local_ip_re}"); do
     # run pre update remote hook
     run_hook pre_update_remote_hook "${ip}" "${local_dir}"
 
