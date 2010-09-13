@@ -1,0 +1,149 @@
+#!/bin/bash
+
+# sync-services --- Sync services between several hosts.
+# Copyright © 2010 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
+# Last changed: 2010-09-13 17:37:55
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+VERSION="1.0"
+
+config_dir=./.sync-services
+config=config
+pre_update_hook=pre-update
+post_update_hook=post-update
+pre_update_remote_hook=pre-update-remote
+post_update_remote_hook=post-update-remote
+dry_run=
+verbose=
+run_parts=$(which run-parts)
+ssh=$(which ssh)
+ssh_opts=""
+rsync=$(which rsync)
+rsync_opts="-aie ssh --stats --delete --progress"
+
+forbidden_dirs='^/$|^/lib/init/rw|^/proc|^/sys|^/dev'
+
+function die() {
+  echo "$@" >&2
+  exit 1
+}
+
+function run_hook() {
+    local hook=$1
+    local host=$2
+    local dir=$3
+    if test -n "${!hook}" -a -d "${config_dir}/${!hook}"; then
+	if test -z "${host}"; then
+	    if test -n "${verbose}" -o -n "${dry_run}"; then
+		echo "running \"${hook}\""
+	    fi
+	    if test -z "${dry_run}"; then
+		${run_parts} "${config_dir}/${!hook}"
+	    fi
+	else
+	    if test -n "${verbose}" -o -n "${dry_run}"; then
+		echo "running \"${hook}\" on ${host} in ${dir}"
+	    fi
+	    if test -z "${dry_run}"; then
+		${ssh} ${ssh_opts} ${host} \
+		    "cd \"${dir}\" && ${run_parts} \"${config_dir}/${!hook}\""
+	    fi
+	fi
+    fi
+}
+
+function usage() {
+    exit_code=${1:-1}
+    cat <<EOF
+sync-services Version ${VERSION}
+Copyright © 2010 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
+
+$0 [ options ] command [ command options ]
+
+Options:
+
+  -d|--config-dir DIR   The configuration directory to be used (Default: $config_dir)
+  -c|--config     CONF  The configuration file to be used relative to config-dir (Default: $config)
+  -r|--dry-run          Only print what would be done.
+  -v|--verbose          Run in verbose mode.
+  -h|--help             This help screen.
+
+EOF
+    exit ${exit_code}
+}
+
+while test $# != 0; do
+    case "$1" in
+	-c|--config)
+            test -z "$2" && die "Need a parameter for $1."
+            config=$2
+            shift
+            ;;
+	-d|--config-dir)
+            test -z "$2" && die "Need a parameter for $1."
+            config_dir=$2
+            shift
+            ;;
+	-r|--dry-run) dry_run=1 ;;
+        -v|--verbose) verbose=1 ;;
+        --help|-h) usage 0 ;;
+	--) shift; break ;;
+        -*|*) usage ;;
+    esac
+    shift
+done
+
+local_dir=$(pwd)
+remote_dir=$(dirname ${local_dir})
+
+# Check if running in forbidden directory
+echo "${local_dir}" | grep -E "${forbidden_dirs}" 2>&1 >/dev/null
+if test 0 -eq $?; then
+    die "Running $0 in ${local_dir} is not a good idea."
+fi
+
+# Check configuration file
+if ! test -r "${config_dir}/${config}"; then
+    die "Configuration file '${config}' not found"
+fi
+# Finally load configuration file.
+source "${config_dir}/${config}"
+
+local_ip_re=$(ip -4 a l scope global | \
+    sed -n 's/^[[:space:]]\+inet[[:space:]]\+\([^\/]\+\).*/\1/p' | \
+    sed ':a;$!N;s/\n/|/g;ta')
+
+# run pre update hook
+run_hook pre_update_hook
+
+# loop al IPs
+for ip in $( echo ${IPS} | tr ' ' '\n' | grep -vE "${local_ip_re}"); do
+    # run pre update remote hook
+    run_hook pre_update_remote_hook "${ip}" "${local_dir}"
+
+    # sync data
+    if test -n "${verbose}" -o -n "${dry_run}"; then
+	echo "Updating ${ip} ${local_dir} -> ${remote_dir}."
+    fi
+    if test -z "${dry_run}"; then
+	${rsync} ${rsync_opts} "${local_dir}" $ip:${remote_dir}
+    fi
+
+    # run post update remote hook
+    run_hook post_update_remote_hook "${ip}" "${local_dir}"
+done
+
+# run post update hook
+run_hook post_update_hook
