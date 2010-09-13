@@ -124,6 +124,29 @@ post_update_remote_hook::
     starts for this specific host. This is generally a good place to restart
     the service on remote host.
 
+== HOW DOES IT WORK ==
+
++sync-services+ is designed to be run directly in the directory to be
+synchronized. The configuration files must be located in the directory that
+should be synchronized under the '.sync-service' directory.
+
++sync-services+ looks up for all IP address on localhost that are on a IPv4
+global scope and remove all local IP addresses from 'ips' configuration
+entry (that's why host names does not work yet).
+
+Then the 'pre_update_hook' is run.
+
+The 'pre_update_remote_hook' is run on *remote* host through a +ssh+(1).
+
+The local directory is synchronized to the remote host using both +rsync+(1)
+and +ssh+(1).
+
+The 'post_update_remote_hook' is run on *remote* host through a +ssh+(1).
+
+These last 3 actions are repeated for each IP addresses from 'ips' but local.
+
+Then the 'post_update_hook' is run.
+
 == SEE ALSO ==
 
  - +run-parts+(8)
