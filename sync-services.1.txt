@@ -27,6 +27,10 @@ from which configuration files are not globally stored on a filer.
 
 NOTE: The configuration file is *relative* to the configuration directory.
 
+-i, --init::
+
+    Initialize configuration directory and exit.
+
 -r, --dry-run::
 
     Only print what would be done.

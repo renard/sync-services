@@ -2,7 +2,7 @@
 
 # sync-services --- Sync services between several hosts.
 # Copyright © 2010 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-# Last changed: 2010-09-13 17:51:01
+# Last changed: 2010-09-14 16:15:39
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ post_update_remote_hook=post-update-remote
 
 dry_run=
 verbose=
+init=
 run_parts=$(which run-parts)
 ssh=$(which ssh)
 ssh_opts=""
@@ -79,6 +80,7 @@ Options:
 
   -d|--config-dir DIR   The configuration directory to be used (Default: $config_dir)
   -c|--config     CONF  The configuration file to be used relative to config-dir (Default: $config)
+  -i|--init             Initialize directory.
   -r|--dry-run          Only print what would be done.
   -v|--verbose          Run in verbose mode.
   -h|--help             This help screen.
@@ -123,6 +125,25 @@ if ! test -r "${config_dir}/${config}"; then
 fi
 # Finally load configuration file.
 source "${config_dir}/${config}"
+
+# init configuration directory
+if test -n "${init}"; then
+    mkdir -p "${config_dir}"
+    for h in pre_update_hook post_update_hook pre_update_remote_hook \
+	post_update_remote_hook; do
+	mkdir -p "${config_dir}/${!h}"
+    done
+    if ! test -r "${config_dir}/${config}"; then
+	cat <<EOF > "${config_dir}/${config}"
+ips=""
+pre_update_hook=${pre_update_hook}
+post_update_hook=${post_update_hook}
+pre_update_remote_hook=${pre_update_remote_hook}
+post_update_remote_hook=${post_update_remote_hook}
+EOF
+    fi
+    exit
+fi
 
 local_ip_re=$(ip -4 a l scope global | \
     sed -n 's/^[[:space:]]\+inet[[:space:]]\+\([^\/]\+\).*/\1/p' | \
