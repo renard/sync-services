@@ -31,6 +31,8 @@ NOTE: The configuration file is *relative* to the configuration directory.
 
     Initialize configuration directory and exit.
 
+NOTE: This option is only run if no configuration directory is found.
+
 -r, --dry-run::
 
     Only print what would be done.

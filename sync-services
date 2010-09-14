@@ -2,7 +2,7 @@
 
 # sync-services --- Sync services between several hosts.
 # Copyright © 2010 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-# Last changed: 2010-09-14 16:15:39
+# Last changed: 2010-09-14 16:19:46
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -101,6 +101,7 @@ while test $# != 0; do
             config_dir=$2
             shift
             ;;
+	-i|--init) init=1 ;;
 	-r|--dry-run) dry_run=1 ;;
         -v|--verbose) verbose=1 ;;
         --help|-h) usage 0 ;;
@@ -121,29 +122,32 @@ fi
 
 # Check configuration file
 if ! test -r "${config_dir}/${config}"; then
-    die "Configuration file '${config}' not found"
-fi
-# Finally load configuration file.
-source "${config_dir}/${config}"
+    # init configuration directory
+    if test -z "${init}"; then
+	die "Configuration file '${config}' not found"
+    else
 
-# init configuration directory
-if test -n "${init}"; then
-    mkdir -p "${config_dir}"
-    for h in pre_update_hook post_update_hook pre_update_remote_hook \
-	post_update_remote_hook; do
-	mkdir -p "${config_dir}/${!h}"
-    done
-    if ! test -r "${config_dir}/${config}"; then
-	cat <<EOF > "${config_dir}/${config}"
+	mkdir -p "${config_dir}"
+	for h in pre_update_hook post_update_hook pre_update_remote_hook \
+	    post_update_remote_hook; do
+	    mkdir -p "${config_dir}/${!h}"
+	done
+	if ! test -r "${config_dir}/${config}"; then
+	    cat <<EOF > "${config_dir}/${config}"
 ips=""
 pre_update_hook=${pre_update_hook}
 post_update_hook=${post_update_hook}
 pre_update_remote_hook=${pre_update_remote_hook}
 post_update_remote_hook=${post_update_remote_hook}
 EOF
+	fi
+	exit
     fi
-    exit
 fi
+
+# Finally load configuration file.
+source "${config_dir}/${config}"
+
 
 local_ip_re=$(ip -4 a l scope global | \
     sed -n 's/^[[:space:]]\+inet[[:space:]]\+\([^\/]\+\).*/\1/p' | \
