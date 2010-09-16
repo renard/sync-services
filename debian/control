@@ -1,0 +1,15 @@
+Source: sync-services
+Section: utils
+Priority: extra
+Maintainer: Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
+Build-Depends: debhelper (>= 7.0.50)
+Standards-Version: 3.8.0
+Homepage: http://git.chezwam.org/sync-services
+
+Package: sync-services
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: sync services between several hosts
+ sync-services could be used to synchronized several similar configuration
+ files on multiple hosts. This is mainly useful when administrating a
+ cluster from which configuration files are not globally stored on a filer.
