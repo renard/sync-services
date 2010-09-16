@@ -1,0 +1,383 @@
+'\" t
+.\"     Title: sync-services
+.\"    Author: [see the "AUTHORS" section]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 09/14/2010
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "SYNC\-SERVICES" "1" "09/14/2010" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+sync-services \- Sync services between several hosts
+.SH "SYNOPSIS"
+.sp
+sync\-services [ options ]
+.SH "DESCRIPTION"
+.sp
+sync\-services could be used to synchronized several similar configuration files on multiple hosts\&. This is mainly useful when administrating a cluster from which configuration files are not globally stored on a filer\&.
+.SH "ARGUMENTS"
+.PP
+\-d DIR, \-\-config\-dir DIR
+.RS 4
+The configuration directory to be used instead of default one which is
+\fI\&./\&.sync\-services\fR\&.
+.RE
+.PP
+\-c CONF, \-\-config CONF
+.RS 4
+The configuration file to be used instead of default one which is
+\fIconfig\fR\&.
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+The configuration file is \fBrelative\fR to the configuration directory\&.
+.sp .5v
+.RE
+.PP
+\-i, \-\-init
+.RS 4
+Initialize configuration directory and exit\&.
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+This option is only run if no configuration directory is found\&.
+.sp .5v
+.RE
+.PP
+\-r, \-\-dry\-run
+.RS 4
+Only print what would be done\&.
+.RE
+.PP
+\-v, \-\-verbose
+.RS 4
+Run in verbose mode\&.
+.RE
+.PP
+\-h, \-\-help
+.RS 4
+Print help screen\&.
+.RE
+.SH "CONFIGURATION FILE"
+.sp
+The configuration file is located by default in \fI\&./\&.sync\-services/config\fR\&.
+.sp
+A configuration file must be present for sync\-services to run\&.
+.sp
+The configuration file consists of bash(1) variables which syntax is as simple as:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+VARIABLE="VALUE"
+.fi
+.if n \{\
+.RE
+.\}
+.SS "General options"
+.PP
+ips
+.RS 4
+This is a space separated list of servers that should be synchronized together\&.
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+At this moment only IP addresses should be specified, not hostnames\&.
+.sp .5v
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBWarning\fR
+.ps -1
+.br
+.sp
+IP addresses of all members from the cluster had to be defined\&. This means even IP address of current member must be set\&.
+.sp .5v
+.RE
+.PP
+run_parts
+.RS 4
+Path to
+run\-parts(8) binary\&. By default this is hard\-coded to
+\fB$(which run\-parts)\fR
+and shouldn\(cqt be changed\&.
+.RE
+.PP
+ssh
+.RS 4
+Path to
+ssh(1) binary\&. By default this is hard\-coded to
+\fB$(which ssh)\fR
+and shouldn\(cqt be changed\&.
+.RE
+.PP
+ssh_opts
+.RS 4
+Options to be passed to
+ssh(1)\&.
+.RE
+.PP
+rsync
+.RS 4
+Path to
+rsync(1) binary\&. By default this is hard\-coded to
+\fB$(which rsync)\fR
+and shouldn\(cqt be changed\&.
+.RE
+.PP
+rsync_opts
+.RS 4
+Options to be passed to
+rsync(1)\&. By default set to
+\fB\-aie ssh \-\-stats \-\-delete \-\-progress\fR
+which may be a little chatty\&.
+.RE
+.PP
+forbidden_dirs
+.RS 4
+Regexp defining directories that
+\fBmustn\(cqt\fR
+be synchronized\&. By default
+\fI/$|\fR\fI/lib/init/rw|\fR\fI/proc|\fR\fI/sys|^/dev\fR
+to exclude:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+/
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+/lib/init/rw
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+/proc
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+/sys
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+/dev
+.RE
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+This is not a good idea to run sync\-services from those directories\&.
+.sp .5v
+.RE
+.SS "hooks"
+.sp
+Hooks can be run ad different moment from the synchronization process:
+.PP
+pre_update_hook
+.RS 4
+This hook is ran on
+\fBlocal\fR
+host
+\fBbefore\fR
+the synchronization process starts\&. This hook is generally a good place to generate configuration files from scripts or to restart the service on local host\&.
+.RE
+.PP
+post_update_hook
+.RS 4
+This hook is ran on
+\fBlocal\fR
+host
+\fBafter\fR
+the synchronization process starts\&. This is ran when all hosts are synchronized\&.
+.RE
+.PP
+pre_update_remote_hook
+.RS 4
+This hook is ran on
+\fBremote\fR
+host
+\fBbefore\fR
+the synchronization process starts for this specific host\&. This is generally a good place to ask user confirmation before going on on remote host\&.
+.RE
+.PP
+post_update_remote_hook
+.RS 4
+This hook is ran on
+\fBremote\fR
+host
+\fBafter\fR
+the synchronization process starts for this specific host\&. This is generally a good place to restart the service on remote host\&.
+.RE
+.SH "HOW DOES IT WORK"
+.sp
+sync\-services is designed to be run directly in the directory to be synchronized\&. The configuration files must be located in the directory that should be synchronized under the \fI\&.sync\-service\fR directory\&.
+.sp
+sync\-services looks up for all IP address on localhost that are on a IPv4 global scope and remove all local IP addresses from \fIips\fR configuration entry (that\(cqs why host names does not work yet)\&.
+.sp
+Then the \fIpre_update_hook\fR is run\&.
+.sp
+The \fIpre_update_remote_hook\fR is run on \fBremote\fR host through a ssh(1)\&.
+.sp
+The local directory is synchronized to the remote host using both rsync(1) and ssh(1)\&.
+.sp
+The \fIpost_update_remote_hook\fR is run on \fBremote\fR host through a ssh(1)\&.
+.sp
+These last 3 actions are repeated for each IP addresses from \fIips\fR but local\&.
+.sp
+Then the \fIpost_update_hook\fR is run\&.
+.SH "SEE ALSO"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+run\-parts(8)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+ssh(1)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+rsync(1)
+.RE
+.SH "HISTORY"
+.PP
+2010\-09\-13
+.RS 4
+First release\&.
+.RE
+.SH "BUGS"
+.sp
+No time to include bugs, command actions might seldom lead astray user\(cqs assumption\&.
+.SH "AUTHORS"
+.sp
+sync\-services is written by S\('ebastien Gross <seb\(buɑƬ\(buchezwam\(buɖɵʈ\(buorg>\&.
+.SH "COPYRIGHT"
+.sp
+Copyright \(co 2010 S\('ebastien Gross <seb\(buɑƬ\(buchezwam\(buɖɵʈ\(buorg>\&. Relased under GNU GPL version 3 or higher (\m[blue]\fBhttp://www\&.gnu\&.org/licenses/gpl\&.html\fR\m[])\&.
