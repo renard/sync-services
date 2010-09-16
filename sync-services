@@ -2,7 +2,7 @@
 
 # sync-services --- Sync services between several hosts.
 # Copyright © 2010 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-# Last changed: 2010-09-14 16:19:46
+# Last changed: 2010-09-16 19:58:41
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ function run_hook() {
 	if test -z "${host}"; then
 	    if test -n "${verbose}" -o -n "${dry_run}"; then
 		echo "running \"${hook}\""
+		${run_parts} --test "${config_dir}/${!hook}" | sed 's/^/  /'
 	    fi
 	    if test -z "${dry_run}"; then
 		${run_parts} "${config_dir}/${!hook}"
@@ -59,6 +60,7 @@ function run_hook() {
 	else
 	    if test -n "${verbose}" -o -n "${dry_run}"; then
 		echo "running \"${hook}\" on ${host} in ${dir}"
+		${run_parts} --test "${config_dir}/${!hook}" | sed 's/^/  /'
 	    fi
 	    if test -z "${dry_run}"; then
 		${ssh} ${ssh_opts} ${host} \
