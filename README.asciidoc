@@ -60,12 +60,27 @@ simple as:
 
 ips::
 
-    This is a space separated list of servers that should be synchronized together.
+    This is a space separated list of servers that should be synchronized
+    together.
 
 NOTE: At this moment only IP addresses should be specified, not hostnames.
 
-WARNING: IP addresses of all members from the cluster had to be defined. This
-means even IP address of current member must be set.
+WARNING: IP addresses of all members from the cluster had to be
+defined. This means even IP address of current member must be set.
+
+includes::
+
+    A +bash+(1) array of all files and/or directories to include during the
+    synchronization process. This options useful when for some application
+    that use configuration files in several paths.
+    .
+    For example, application +foo+ is using '/etc/foo.conf' as the main
+    configuration file and '/etc/foo.d' for some configuration snippets. In
+    addition the '/etc/default/foo' and '/etc/init.d/foo' files should also
+    be synchronized to other hosts. Put +sync-services+ configuration files
+    under '/etc/foo.d' and add in '.sync-services/config':
+
+        includes=("/etc/foo.conf" "/etc/default/foo" "/etc/init.d/foo" )
 
 run_parts::
 

@@ -2,7 +2,7 @@
 
 # sync-services --- Sync services between several hosts.
 # Copyright © 2010 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-# Last changed: 2010-09-16 19:58:41
+# Last changed: 2010-09-21 16:10:32
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ config_dir=./.sync-services
 config=config
 
 ips=
+includes=
 pre_update_hook=pre-update
 post_update_hook=post-update
 pre_update_remote_hook=pre-update-remote
@@ -115,12 +116,15 @@ done
 
 local_dir=$(pwd)
 remote_dir=$(dirname ${local_dir})
+# Add local directory to includes
+includes=("${local_dir}" ${includes[@]})
 
-# Check if running in forbidden directory
-echo "${local_dir}" | grep -E "${forbidden_dirs}" 2>&1 >/dev/null
-if test 0 -eq $?; then
-    die "Running $0 in ${local_dir} is not a good idea."
-fi
+for i in $(seq 0 $((${#includes[@]} - 1))); do
+    echo "${includes[$i]}" | grep -E "${forbidden_dirs}" 2>&1 >/dev/null
+    if test 0 -eq $?; then
+	die "Running $0 in ${includes[$i]} is not a good idea."
+    fi
+done
 
 # Check configuration file
 if ! test -r "${config_dir}/${config}"; then
@@ -137,6 +141,7 @@ if ! test -r "${config_dir}/${config}"; then
 	if ! test -r "${config_dir}/${config}"; then
 	    cat <<EOF > "${config_dir}/${config}"
 ips=""
+#includes=()
 pre_update_hook=${pre_update_hook}
 post_update_hook=${post_update_hook}
 pre_update_remote_hook=${pre_update_remote_hook}
@@ -170,9 +175,8 @@ for ip in $( echo ${ips} | tr ' ' '\n' | grep -vE "${local_ip_re}"); do
     if test -n "${verbose}" -o -n "${dry_run}"; then
 	echo "Updating ${ip} ${local_dir} -> ${remote_dir}."
     fi
-    if test -z "${dry_run}"; then
-	${rsync} ${rsync_opts} "${local_dir}" $ip:${remote_dir}
-    fi
+
+    ${rsync} ${rsync_opts} ${includes[*]} $ip:/
 
     # run post update remote hook
     run_hook post_update_remote_hook "${ip}" "${local_dir}"
