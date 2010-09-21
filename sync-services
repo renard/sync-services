@@ -35,7 +35,7 @@ run_parts=$(which run-parts)
 ssh=$(which ssh)
 ssh_opts=""
 rsync=$(which rsync)
-rsync_opts="-aie ssh --stats --delete --progress"
+rsync_opts="--archive -i --relative --rsh=\"ssh\" --stats --delete --progress"
 
 forbidden_dirs='^/$|^/lib/init/rw|^/proc|^/sys|^/dev'
 
@@ -150,6 +150,9 @@ fi
 # Finally load configuration file.
 source "${config_dir}/${config}"
 
+if test -n "${dry_run}"; then
+    rsync_opts="${rsync_opts} --dry-run"
+fi
 
 local_ip_re=$(ip -4 a l scope global | \
     sed -n 's/^[[:space:]]\+inet[[:space:]]\+\([^\/]\+\).*/\1/p' | \
