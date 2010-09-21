@@ -103,8 +103,9 @@ rsync::
 
 rsync_opts::
 
-    Options to be passed to +rsync+(1). By default set to *-aie ssh --stats
-    --delete --progress* which may be a little chatty.
+    Options to be passed to +rsync+(1). By default set to *--archive -i
+    --relative --rsh="ssh" --stats --delete --progress* which may be a
+    little chatty.
 
 forbidden_dirs::
 
@@ -176,9 +177,14 @@ Then the 'post_update_hook' is run.
 
 == HISTORY ==
 
+2010-09-21::
+
+  - Add *include* option
+  - Prettiest verbose display
+
 2010-09-13::
 
-  First release.
+  - First release
 
 == BUGS ==
 

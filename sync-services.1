@@ -221,7 +221,7 @@ rsync_opts
 .RS 4
 Options to be passed to
 rsync(1)\&. By default set to
-\fB\-aie ssh \-\-stats \-\-delete \-\-progress\fR
+\fB\-\-archive \-i \-\-relative \-\-rsh="ssh" \-\-stats \-\-delete \-\-progress\fR
 which may be a little chatty\&.
 .RE
 .PP
@@ -399,9 +399,47 @@ rsync(1)
 .RE
 .SH "HISTORY"
 .PP
+2010\-09\-21
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Add
+\fBinclude\fR
+option
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Prettiest verbose display
+.RE
+.RE
+.PP
 2010\-09\-13
 .RS 4
-First release\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+First release
+.RE
 .RE
 .SH "BUGS"
 .sp
