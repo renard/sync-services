@@ -2,7 +2,7 @@
 
 # sync-services --- Sync services between several hosts.
 # Copyright © 2010 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-# Last changed: 2010-09-21 17:43:04
+# Last changed: 2010-09-21 17:59:44
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -182,7 +182,11 @@ for ip in $( echo ${ips} | tr ' ' '\n' | grep -vE "${local_ip_re}"); do
 
     # sync data
     if test -n "${verbose}" -o -n "${dry_run}"; then
-	echo "Updating ${ip} ${local_dir} -> ${remote_dir}."
+	echo "Updating ${ip}"
+	for i in ${includes[@]}; do
+	    echo "  $i" 
+	done
+	echo
     fi
 
     ${rsync} ${rsync_opts} ${includes[*]} $ip:/
