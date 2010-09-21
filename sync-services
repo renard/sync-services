@@ -2,7 +2,7 @@
 
 # sync-services --- Sync services between several hosts.
 # Copyright © 2010 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-# Last changed: 2010-09-21 16:34:07
+# Last changed: 2010-09-21 17:43:04
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -116,15 +116,13 @@ done
 
 local_dir=$(pwd)
 remote_dir=$(dirname ${local_dir})
-# Add local directory to includes
-includes=("${local_dir}" ${includes[@]})
 
-for i in $(seq 0 $((${#includes[@]} - 1))); do
-    echo "${includes[$i]}" | grep -E "${forbidden_dirs}" 2>&1 >/dev/null
-    if test 0 -eq $?; then
-	die "Running $0 in ${includes[$i]} is not a good idea."
-    fi
-done
+# Check if running in forbidden directory
+echo "${local_dir}" | grep -E "${forbidden_dirs}" 2>&1 >/dev/null
+if test 0 -eq $?; then
+    die "Running $0 in ${local_dir} is not a good idea."
+fi
+
 
 # Check configuration file
 if ! test -r "${config_dir}/${config}"; then
@@ -154,6 +152,17 @@ fi
 
 # Finally load configuration file.
 source "${config_dir}/${config}"
+
+# Add local directory to includes
+includes=("${local_dir}" ${includes[@]})
+
+# Check no file is in a forbidden directory.
+for i in $(seq 0 $((${#includes[@]} - 1))); do
+    echo "${includes[$i]}" | grep -E "${forbidden_dirs}" 2>&1 >/dev/null
+    if test 0 -eq $?; then
+	die "Including files or dirs from ${includes[$i]} is not a good idea."
+    fi
+done
 
 if test -n "${dry_run}"; then
     rsync_opts="${rsync_opts} --dry-run"
