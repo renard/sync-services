@@ -74,17 +74,16 @@ includes::
     synchronization process. This options useful when for some application
     that use configuration files in several paths.
 
-TIP: For example, application +foo+ is using '/etc/foo.conf' as the main
-    configuration file and '/etc/foo.d' for some configuration snippets. In
-    addition the '/etc/default/foo' and '/etc/init.d/foo' files should also be
-    synchronized to other hosts. Put +sync-services+ configuration files under
-    '/etc/foo.d' and add in '.sync-services/config':
+[NOTE]
+====
+For example, application +foo+ is using '/etc/foo.conf' as the main
+configuration file and '/etc/foo.d' for some configuration snippets. In
+addition the '/etc/default/foo' and '/etc/init.d/foo' files should also be
+synchronized to other hosts. Put +sync-services+ configuration files under
+'/etc/foo.d' and add in '.sync-services/config':
 
-        includes=("/etc/foo.conf" "/etc/default/foo" "/etc/init.d/foo" )
-
-
-NOTE: This option should only be used with +rsync+(1) as *sync* option (see
-below).
+   includes=("/etc/foo.conf" "/etc/default/foo" "/etc/init.d/foo" )
+====
 
 run_parts::
 
@@ -104,16 +103,20 @@ sync::
 
     Command used to synchronize files. The string '@@IP@@' is expanded to the
     target host ip address.
-    
-NOTE: a very simple and efficient command could be 'rsync --archive -i
---relative --stats --delete --progress \${includes[*]} @@IP@@:/' then *includes*
-could be used. If root is forbiden in remote host then following command could
-be used 'sudo tar -cf - ../$(basename `pwd`) | ssh @@IP@@ sudo tar -C . -xf -'.
-In that cas do not forget to move files in a *post_update_remote_hook* (see
-below).
 
-NOTE: Using +tar+(1) and +sudo+(1) is better for security (no root connection)
-but all files are copied to destination host.
+[NOTE]
+====
+a very simple and efficient command could be:
+
+  rsync --archive -i--relative --stats --delete --progress \${includes[*]} @@IP@@:\$(basename `pwd`)
+
+If root is forbiden in remote host then following command could be used:
+
+   sudo tar -cf - \${includes[*]} | ssh @@IP@@ sudo tar -C / -xf -
+
+In that case files might need to be deleted first on remote host in a
+*post_update_remote_hook* (see below).
+====
 
 forbidden_dirs::
 
@@ -157,15 +160,16 @@ post_update_remote_hook::
     starts for this specific host. This is generally a good place to restart
     the service on remote host.
 
-NOTE: If +ssh+(1) and +sudo+(1) are used to synchronize files the following
-    command could be used in
-    '.sync-services/post-update-remote/10move-files-to-etc' to move files in
-    real target directory
+[NOTE]
+====
+If +ssh+(1) and +sudo+(1) are used to synchronize files the following command
+could be used in '.sync-services/post-update-remote/10remove-files-from-etc' to
+move files in real target directory
 
-    	    #!/bin/sh
-
-    	    sudo rm -rf /etc/bind
-	    sudo mv ../$(basename `pwd`) /etc
+    #!/bin/sh
+    
+    sudo rm -rf /path/to/be/synced
+====
 
 
 == HOW DOES IT WORK ==
@@ -182,8 +186,8 @@ Then the 'pre_update_hook' is run.
 
 The 'pre_update_remote_hook' is run on *remote* host through a +ssh+(1).
 
-The local directory is synchronized to the remote host using both +rsync+(1)
-and +ssh+(1).
+The local directory is synchronized to the remote host using command defined in
+'sync'.
 
 The 'post_update_remote_hook' is run on *remote* host through a +ssh+(1).
 
@@ -197,6 +201,7 @@ Then the 'post_update_hook' is run.
  - +ssh+(1)
  - +rsync+(1)
  - +tar+(1)
+ - +sudo+(1)
 
 == HISTORY ==
 

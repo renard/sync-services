@@ -2,7 +2,7 @@
 
 # sync-services --- Sync services between several hosts.
 # Copyright © 2010 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-# Last changed: 2011-04-26 17:45:33
+# Last changed: 2011-04-27 19:29:49
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ init=
 run_parts=$(which run-parts)
 ssh=$(which ssh)
 ssh_opts=""
-sync="sudo tar -cf - ../$(basename `pwd`) | ssh @@IP@@ sudo tar -C . -xf -"
+sync="sudo tar -cf - \${includes[*]} | ssh @@IP@@ sudo tar -C / -xf -"
 
 forbidden_dirs='^/$|^/lib/init/rw|^/proc|^/sys|^/dev'
 
@@ -114,7 +114,6 @@ while test $# != 0; do
 done
 
 local_dir=$(pwd)
-remote_dir=$(dirname ${local_dir})
 
 # Check if running in forbidden directory
 echo "${local_dir}" | grep -E "${forbidden_dirs}" 2>&1 >/dev/null
@@ -129,7 +128,6 @@ if ! test -r "${config_dir}/${config}"; then
     if test -z "${init}"; then
 	die "Configuration file '${config}' not found"
     else
-
 	mkdir -p "${config_dir}"
 	for h in pre_update_hook post_update_hook pre_update_remote_hook \
 	    post_update_remote_hook; do
@@ -138,23 +136,16 @@ if ! test -r "${config_dir}/${config}"; then
 	if ! test -r "${config_dir}/${config}"; then
 	    cat <<EOF > "${config_dir}/${config}"
 ips=""
-# includes only works with rsync as sync command (see below)
 #includes=()
 pre_update_hook=${pre_update_hook}
 post_update_hook=${post_update_hook}
 pre_update_remote_hook=${pre_update_remote_hook}
 post_update_remote_hook=${post_update_remote_hook}
 
-# Use this is syncing with tar ...
-remote_tmp_hook_path=\$(basename \`pwd\`)
-# ... or this if syncing with rsync
-remote_tmp_hook_path=\${local_dir}
-
 # prevent from connecting as root
-sync="sudo tar -cf - ../\$(basename \`pwd\`) | ssh @@IP@@ sudo tar -C . -xf -"
-
+sync="sudo tar -cf - \${includes[*]} | ssh @@IP@@ sudo tar -C / -xf -"
 # Using rsync
-# sync="rsync --archive -i --relative --stats --delete --progress \${includes[*]} @@IP@@:/"
+# sync="rsync --archive -i --relative --stats --delete --progress \${includes[*]} @@IP@@:\$(basename \`pwd\`)"
 EOF
 	fi
 	exit
@@ -186,8 +177,6 @@ run_hook pre_update_hook
 # loop al IPs
 for ip in $( echo ${ips} | tr ' ' '\n' | grep -vE "${local_ip_re}"); do
     # run pre update remote hook
-    # As long as this is a pre-update hook this command should be run in
-    # destination directory.
     run_hook pre_update_remote_hook "${ip}" "${local_dir}"
 
     # sync data
@@ -201,14 +190,14 @@ for ip in $( echo ${ips} | tr ' ' '\n' | grep -vE "${local_ip_re}"); do
 
     _cmd=$(echo ${sync} | sed "s,@@IP@@,${ip},g")
 
-    if test -n "${dry_run}"; then
+    if test -n "${verbose}" -o -n "${dry_run}"; then
 	echo "${_cmd}"
     else
 	eval ${_cmd}
     fi
     
     # run post update remote hook
-    run_hook post_update_remote_hook "${ip}" "${remote_tmp_hook_path}"
+    run_hook post_update_remote_hook "${ip}" "${local_dir}"
 done
 
 # run post update hook
