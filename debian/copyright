@@ -1,7 +1,7 @@
 This package was debianized by Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org> on
 Thu, 16 Sep 2010 09:03:42 +0000.
 
-It was downloaded from http://git.chezwam.org/sync-services
+It was downloaded from https://github.com/renard/sync-services
 
 Upstream Author:
 
@@ -9,7 +9,7 @@ Upstream Author:
 
 Copyright:
 
-    Copyright (C) 2010 Sébastien Gross
+    Copyright (C) 2010-2011 Sébastien Gross
 
 License:
 
@@ -30,5 +30,5 @@ License:
 On Debian systems, the complete text of the GNU General
 Public License can be found in `/usr/share/common-licenses/GPL'.
 
-The Debian packaging is (C) 2010, Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org> and
-is licensed under the GPL, see above.
+The Debian packaging is (C) 2010-2011, Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
+and is licensed under the GPL, see above.
