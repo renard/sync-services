@@ -191,7 +191,7 @@ for ip in $( echo ${ips} | tr ' ' '\n' | grep -vE "${local_ip_re}"); do
     _cmd=$(echo ${sync} | sed "s,@@IP@@,${ip},g")
 
     if test -n "${verbose}" -o -n "${dry_run}"; then
-	echo "${_cmd}"
+	eval "echo ${_cmd}"
     else
 	eval ${_cmd}
     fi
