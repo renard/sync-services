@@ -9,6 +9,7 @@ Homepage: http://git.chezwam.org/sync-services
 Package: sync-services
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: rsync, sudo
 Description: sync services between several hosts
  sync-services could be used to synchronized several similar configuration
  files on multiple hosts. This is mainly useful when administrating a
