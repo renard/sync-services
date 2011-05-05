@@ -105,8 +105,9 @@ sync::
     target host ip address.
 
 [NOTE]
+
 ====
-a very simple and efficient command could be:
+A very simple and efficient command could be:
 
   rsync --archive -i--relative --stats --delete --progress \${includes[*]} @@IP@@:\$(basename `pwd`)
 
@@ -161,6 +162,7 @@ post_update_remote_hook::
     the service on remote host.
 
 [NOTE]
+
 ====
 If +ssh+(1) and +sudo+(1) are used to synchronize files the following command
 could be used in '.sync-services/post-update-remote/10remove-files-from-etc' to
@@ -230,4 +232,5 @@ user's assumption.
 == COPYRIGHT ==
 
 Copyright © 2010-2011 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>.
-Relased under GNU GPL version 3 or higher (http://www.gnu.org/licenses/gpl.html[]).
+
+Relased under WTFPL (http://sam.zoy.org/wtfpl/COPYING[]).
