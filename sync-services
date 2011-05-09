@@ -135,10 +135,12 @@ post_update_hook=${post_update_hook}
 pre_update_remote_hook=${pre_update_remote_hook}
 post_update_remote_hook=${post_update_remote_hook}
 
+ssh_opts="-o StrictHostKeyChecking=no"
+
 # prevent from connecting as root
-sync="sudo tar -cf - \${includes[*]} | ssh @@IP@@ sudo tar -C / -xf -"
+sync="sudo tar -cf - \\\${includes[*]} | ssh @@IP@@ sudo tar -C / -xf -"
 # Using rsync
-# sync="rsync --archive -i --relative --stats --delete --progress \${includes[*]} @@IP@@:\$(basename \`pwd\`)"
+# sync="rsync --archive -i --relative --stats --delete --progress \\\${includes[*]} @@IP@@:\$(basename \`pwd\`)"
 EOF
 	fi
 	exit
