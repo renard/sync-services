@@ -27,6 +27,10 @@ from which configuration files are not globally stored on a filer.
 
 NOTE: The configuration file is *relative* to the configuration directory.
 
+-I, --ips IPS::
+
+   Space-separated list of IPs to sync instead of all.
+
 -i, --init::
 
     Initialize configuration directory and exit.
@@ -206,6 +210,12 @@ Then the 'post_update_hook' is run.
  - +sudo+(1)
 
 == HISTORY ==
+
+2011-05-09::
+
+  - Version 1.3.
+  - Add '--ip' option.
+  - fix config generation at init time.
 
 2011-04-26::
 
