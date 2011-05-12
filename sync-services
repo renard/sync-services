@@ -2,7 +2,7 @@
 
 # sync-services --- Sync services between several hosts.
 # Copyright © 2010 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-# Last changed: 2011-05-09 16:28:45
+# Last changed: 2011-05-12 18:23:35
 
 # This program is free software. It comes without any warranty, to
 # the extent permitted by applicable law. You can redistribute it
@@ -29,7 +29,7 @@ init=
 run_parts=$(which run-parts)
 ssh=$(which ssh)
 ssh_opts=""
-sync="sudo tar -cf - \${includes[*]} | ssh @@IP@@ sudo tar -C / -xf -"
+sync='sudo -E rsync --archive -i --relative --stats --delete --progress --rsync-path "sudo rsync" ${includes[*]} `id -un`@@@IP@@:/'
 
 forbidden_dirs='^/$|^/lib/init/rw|^/proc|^/sys|^/dev'
 
@@ -144,10 +144,8 @@ post_update_remote_hook=${post_update_remote_hook}
 
 ssh_opts="-o StrictHostKeyChecking=no"
 
-# prevent from connecting as root
-sync="sudo tar -cf - \\\${includes[*]} | ssh @@IP@@ sudo tar -C / -xf -"
-# Using rsync
-# sync="rsync --archive -i --relative --stats --delete --progress \\\${includes[*]} @@IP@@:\$(basename \`pwd\`)"
+sync=${sync}
+
 EOF
 	fi
 	exit
