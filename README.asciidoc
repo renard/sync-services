@@ -123,8 +123,9 @@ A very simple and efficient command could be:
 If root connections are forbiden in remote host then following command could
 be used:
 
-   sudo -E rsync --archive -i --relative --stats --delete --progress \ 
-   --rsync-path "sudo rsync" ${includes[*]} `id -un`@@@IP@@:/
+   sudo -E rsync --archive --itemize-changes --rsh="ssh ${ssh_opts}" \
+   --relative --stats --delete --progress --rsync-path "sudo rsync" \
+   ${includes[*]} `id -un`@@@IP@@:/
 ====
 
 forbidden_dirs::
