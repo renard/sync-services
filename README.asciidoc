@@ -130,12 +130,13 @@ be used:
 forbidden_dirs::
 
     Regexp defining directories that *mustn't* be synchronized. By default
-    '^/$|^/lib/init/rw|^/proc|^/sys|^/dev' to exclude:
+    '^/$|^/lib/init/rw|^/proc|^/sys|^/dev|^/etc$' to exclude:
     - /
     - /lib/init/rw
     - /proc
     - /sys
     - /dev
+    - /etc
 
 NOTE: This is not a good idea to run +sync-services+ from those directories.
 
