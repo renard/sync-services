@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Copy keepalived.conf to keepalived.conf.in
+# Change router_id and priority:
+#
+#     global_defs {
+#          ....
+#          router_id @@HOSTNAME@@
+#          ....
+#     }
+#
+#     vrrp_instance VI_VIPS {
+#          ....
+#          priority @@PRIORITY@@
+#          ....
+#     }
+#
+
+PRIORITY=1
+
+case "${HOSTNAME}" in
+    lb1) PRIORITY=100 ;;
+    lb2) PRIORITY=90 ;;
+    *) PRIORITY=1;;
+esac
+
+sudo cp keepalived.conf.in keepalived.conf
+sudo sed -i -e "s/@@HOSTNAME@@/${HOSTNAME}/g" -e "s/@@PRIORITY@@/${PRIORITY}/g" keepalived.conf
