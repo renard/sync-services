@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Copy nrpe_local.cfg to nrpe_local.cfg.in
+# Add this line in nrpe_local.cfg.in:
+#    server_address=@@IP@@
+
+IFACE="eth0"
+IP=$(ip -4 a l ${IFACE} | sed -n 's@.*inet \([^/]\+\).*@\1@p')
+
+sudo cp nrpe_local.cfg.in nrpe_local.cfg
+sudo sed -i -e "s/@@IP@@/${IP}/g" nrpe_local.cfg
