@@ -217,6 +217,17 @@ Then the 'post_update_hook' is run.
 
 == HISTORY ==
 
+2011-06-07::
+
+  - Version 1.4.1.
+  - Add configuration examples.
+
+2011-05-23::
+
+  - Version 1.4.
+  - Add '/etc' to exclude directories.
+  - Change default 'sync' command.
+
 2011-05-12::
 
   - use '--rsync-path' in rsync instead of tar and ssh.
