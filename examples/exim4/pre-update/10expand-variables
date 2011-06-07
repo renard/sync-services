@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Copy update-exim4.conf.conf to update-exim4.conf.conf.in
+# change in update-exim4.conf.conf.in:
+#
+#     dc_other_hostnames='@@HOSTNAME@@'
+#     dc_readhost='@@HOSTNAME@@'
+
+FILES="update-exim4.conf.conf"
+HOSTNAME=$(hostname --fqdn)
+
+for file in ${FILES}; do
+    sudo bash -c "sed -e \"s/@@HOSTNAME@@/${HOSTNAME}/g\" < ${file}.in > ${file}"
+done
