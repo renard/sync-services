@@ -2,12 +2,12 @@
 .\"     Title: sync-services
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 05/23/2011
+.\"      Date: 06/07/2011
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "SYNC\-SERVICES" "1" "05/23/2011" "\ \&" "\ \&"
+.TH "SYNC\-SERVICES" "1" "06/07/2011" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -453,13 +453,51 @@ sync\-services looks up for all IP address on localhost that are on a IPv4 globa
 .sp
 Then the \fIpre_update_hook\fR is run\&.
 .sp
-The \fIpre_update_remote_hook\fR is run on \fBremote\fR host through a ssh(1)\&.
+For each IP addresses from \fIips\fR but local:
 .sp
-The local directory is synchronized to the remote host using command defined in \fIsync\fR\&.
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The
+\fIpre_update_remote_hook\fR
+is run on
+\fBremote\fR
+host through a
+ssh(1)\&.
+.RE
 .sp
-The \fIpost_update_remote_hook\fR is run on \fBremote\fR host through a ssh(1)\&.
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The local directory is synchronized to the remote host using command defined in
+\fIsync\fR\&.
+.RE
 .sp
-These last 3 actions are repeated for each IP addresses from \fIips\fR but local\&.
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The
+\fIpost_update_remote_hook\fR
+is run on
+\fBremote\fR
+host through a
+ssh(1)\&.
+.RE
 .sp
 Then the \fIpost_update_hook\fR is run\&.
 .SH "SEE ALSO"

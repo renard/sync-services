@@ -196,14 +196,15 @@ entry (that's why host names does not work yet).
 
 Then the 'pre_update_hook' is run.
 
-The 'pre_update_remote_hook' is run on *remote* host through a +ssh+(1).
+For each IP addresses from 'ips' but local:
 
-The local directory is synchronized to the remote host using command defined in
-'sync'.
+  - The 'pre_update_remote_hook' is run on *remote* host through a +ssh+(1).
 
-The 'post_update_remote_hook' is run on *remote* host through a +ssh+(1).
+  - The local directory is synchronized to the remote host using command
+    defined in 'sync'.
 
-These last 3 actions are repeated for each IP addresses from 'ips' but local.
+  - The 'post_update_remote_hook' is run on *remote* host through a
+    +ssh+(1).
 
 Then the 'post_update_hook' is run.
 
