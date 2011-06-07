@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Copy munin-node.conf to munin-node.conf.in
+# Change host configuration to: 
+#    host @@IP@@
+
+IFACE="eth0"
+IP=$(ip -4 a l ${IFACE} | sed -n 's@.*inet \([^/]\+\).*@\1@p')
+
+sudo cp munin-node.conf.in munin-node.conf
+sudo sed -i -e "s/@@IP@@/${IP}/g" munin-node.conf
