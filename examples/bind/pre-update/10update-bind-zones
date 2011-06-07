@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# Put all zones in /etc/bind/zones-private.d and /etc/bind/zones-public.d
+# depending their use.
+#
+# In named.conf.options a private area acl should be declared and both
+# private and public views:
+#
+#      acl private {
+#          127.0.0.0/8;
+#          10.73.0.0/16;
+#      };
+#
+#      view "private" {
+#          match-clients {
+#               private;
+#          };
+#          recursion yes;
+#          include "/etc/bind/zones-global";
+#          include "/etc/bind/zones-private";
+#          include "/etc/bind/zones-public";
+#      };
+#
+#      view "public" {
+#          match-clients {
+#               any;
+#          };
+#          recursion no;
+#          include "/etc/bind/zones-global";
+#          include "/etc/bind/zones-public";
+#      };
+
+ROOT=/etc/bind
+zones_type="public private"
+
+for t in ${zones_type}; do
+    rm -f "${ROOT}/zones-${t}.tmp"
+    for f in $(find ${ROOT}/zones-${t}.d -name '*.zone' -not -type d | sort); do
+	zone=$(basename ${f} .zone)
+	stripped_zone=$(echo ${zone}  | sed 's/^0\+\([0-9]\+\)\./\1./')
+	sudo bash -c "cat <<EOF>> ${ROOT}/zones-${t}.tmp
+zone \"${stripped_zone}\" {
+        type         master;
+        file         \"${ROOT}/zones-${t}.d/${zone}.zone\";
+        allow-update { none; };
+        notify       yes;
+};
+
+EOF
+"
+    done
+done
+
+for t in ${zones_type}; do
+    sudo mv ${ROOT}/zones-${t}.tmp ${ROOT}/zones-${t}
+done
