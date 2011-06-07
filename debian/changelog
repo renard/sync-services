@@ -1,3 +1,9 @@
+sync-services (1:1.4.1+git.1-1) unstable; urgency=low
+
+  * New automated build from: v1.4.1 - fa0aadf
+
+ -- Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>  Tue, 07 Jun 2011 13:09:59 +0000
+
 sync-services (1:1.4.1-2) unstable; urgency=low
 
   * New automated build from: v1.4.1 - ba0810f
